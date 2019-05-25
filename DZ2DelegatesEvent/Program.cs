@@ -11,41 +11,20 @@ namespace DZ2DelegatesEvent
         
         static void Main(string[] args)
         {
-            Action<string> action;
-
             AlphaNumbericCollector alphaNumbericCollector = new AlphaNumbericCollector();
             StringCollector stringCollector = new StringCollector();
             ConsoleEnterEvent consoleEnterEvent = new ConsoleEnterEvent();
             ConsoleEnterDelegate consoleEnterDelegate = new ConsoleEnterDelegate();
             ConsoleEnterAction consoleEnterAction = new ConsoleEnterAction();
 
-            string exit = "0";
+            consoleEnterEvent.enterPressed += stringCollector.StringCollection;
+            consoleEnterEvent.enterPressed += alphaNumbericCollector.NumberCollection;
 
-            consoleEnterEvent.enter += stringCollector.StringCollection;
-            consoleEnterEvent.enter += alphaNumbericCollector.NumberCollection;
+            //consoleEnterEvent.Entered();
 
+            //consoleEnterDelegate.Entered(stringCollector.StringCollection, alphaNumbericCollector.NumberCollection);
 
-            while (exit != "1")
-            {
-                exit = Console.ReadLine();
-                //Event
-
-                //consoleEnterEvent.Entered(exit);
-
-
-                //Delegate
-
-                //consoleEnterDelegate.Entered(stringCollector.StringCollection, exit);
-                //consoleEnterDelegate.Entered(alphaNumbericCollector.NumberCollection, exit);
-
-
-                //Action
-
-                //action = stringCollector.StringCollection;
-                //consoleEnterAction.Entered(exit, action);
-                //action = alphaNumbericCollector.NumberCollection;
-                //consoleEnterAction.Entered(exit, action);
-            }
+            //consoleEnterAction.Entered(stringCollector.StringCollection, alphaNumbericCollector.NumberCollection);
         }
     }
 
@@ -53,11 +32,11 @@ namespace DZ2DelegatesEvent
     {
         List<string> numberCollection = new List<string>();
 
-        public void NumberCollection(string n)
+        public void NumberCollection(string inputString)
         {
-            if (n.Any(char.IsNumber))
+            if (inputString.Any(char.IsNumber))
             {
-                numberCollection.Add(n);
+                numberCollection.Add(inputString);
             }
         }
     }
@@ -66,41 +45,63 @@ namespace DZ2DelegatesEvent
     {
         List<string> stringCollection = new List<string>();
 
-        public void StringCollection(string s)
+        public void StringCollection(string inputString)
         {
-            if (s.Any(char.IsNumber))
+            if (inputString.Any(char.IsNumber))
             { }
             else
-                stringCollection.Add(s);
+                stringCollection.Add(inputString);
         }
     }
 
     class ConsoleEnterAction
     {
-        public void Entered(string s, Action<string> a)
+        string stringToIdentify;
+        public void Entered(Action<string> actionString, Action<string> actionNumber)
         {
-            a(s);
+            while (stringToIdentify != "1")
+            {
+                stringToIdentify = Console.ReadLine();
+                if (stringToIdentify != "1")
+                {
+                    actionString(stringToIdentify);
+                    actionNumber(stringToIdentify);
+                }
+            }
         }
     }
 
     class ConsoleEnterDelegate
     {
-        public delegate void EnterPressed(string s);
-
-        public void Entered(EnterPressed EP, string s)
+        public delegate void EnterPressed(string inputString);
+        string stringToIdentify;
+        public void Entered(EnterPressed enterPressedString, EnterPressed enterPressedNumber)
         {
-            EP.Invoke(s);
+            while(stringToIdentify != "1")
+            {
+                stringToIdentify = Console.ReadLine();
+                if (stringToIdentify != "1")
+                {
+                    enterPressedString.Invoke(stringToIdentify);
+                    enterPressedNumber.Invoke(stringToIdentify);
+                }
+            }
         }
     }
 
     class ConsoleEnterEvent
     {
-        public delegate void EnterPressed(string s);
-        public event EnterPressed enter;
-
-        public void Entered(string s)
+        public delegate void EnterPressed(string inputString);
+        public event EnterPressed enterPressed;
+        string stringToIdentify;
+        public void Entered()
         {
-            enter(s);
+            while (stringToIdentify != "1")
+            {
+                stringToIdentify = Console.ReadLine();
+                if (stringToIdentify != "1")
+                    enterPressed(stringToIdentify);
+            }
         }
     }
 }
